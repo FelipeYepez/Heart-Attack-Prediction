@@ -37,20 +37,24 @@ model.compile(
 )
 
 print("Fit past model made without framework")
-history = model.fit(x_train, y_train, epochs=400)
+history = model.fit(x_train, y_train, epochs=400, validation_split=0.2)
 
 plt.subplot(1, 2, 1)
-plt.title("Train")
+plt.title("Loss")
 plt.xlabel("Epochs")
 plt.ylabel("Loss")
-plt.plot(history.history["loss"])
+plt.plot(history.history["loss"], label="Train")
+plt.plot(history.history["val_loss"], label="Validation")
+plt.legend()
 plt.show(block = False)
 
 plt.subplot(1, 2, 2)
-plt.title("Train")
+plt.title("Accuracy")
 plt.xlabel("Epochs")
 plt.ylabel("Categorical Accuracy")
-plt.plot(history.history["categorical_accuracy"])
+plt.plot(history.history["categorical_accuracy"], label="Train")
+plt.plot(history.history["val_categorical_accuracy"], label="Validation")
+plt.legend()
 plt.show()
 
 evaluate = model.evaluate(x_test, y_test)
@@ -61,9 +65,9 @@ print("First Model Categorical Accuracy:", evaluate[1])
 model2 = tf.keras.Sequential()
 model2.add(tf.keras.Input(shape=(input_dim,)))
 model2.add(tf.keras.layers.Dense(units=8, activation="tanh", kernel_initializer=tf.keras.initializers.HeUniform()))
-model2.add(tf.keras.layers.Dropout(0.1))
+model2.add(tf.keras.layers.Dropout(0.25))
 model2.add(tf.keras.layers.Dense(units=6, activation="tanh", kernel_initializer=tf.keras.initializers.HeUniform()))
-model2.add(tf.keras.layers.Dropout(0.1))
+model2.add(tf.keras.layers.Dropout(0.25))
 model2.add(tf.keras.layers.Dense(units=2, activation="softmax", kernel_initializer=tf.keras.initializers.HeUniform()))
 
 model2.compile(
@@ -75,10 +79,10 @@ model2.compile(
 print("Fit improved model")
 batch_size = 32
 history2 = model2.fit(x_train, y_train, 
-    epochs=150, 
+    epochs=200, 
     steps_per_epoch=len(x_train)/batch_size, 
     verbose=2, 
-    validation_data=(x_test, y_test)
+    validation_split=0.2
 )
 
 plt.subplot(1, 2, 1)
